@@ -68,7 +68,7 @@
     <div class="container">
       <div class="section-head">
         <h2 class="section-title">精选作品</h2>
-        <p class="section-desc">// 每个项目都上线可用，点击卡片查看详情</p>
+        <p class="section-desc">// 点击卡片查看项目详情，链接直达 GitHub 源码</p>
       </div>
 
       <div class="filter-bar" role="tablist" aria-label="作品筛选">
@@ -80,7 +80,7 @@
 
       <div class="project-grid" id="projectGrid">
 
-        <article class="project-card" data-category="sys">
+        <article class="project-card" data-category="sys" data-detail="perf" tabindex="0">
           <div class="card-thumb thumb-lime">
             <svg viewBox="0 0 400 220" aria-hidden="true">
               <rect x="30" y="30" width="340" height="160" fill="#000"/>
@@ -106,7 +106,7 @@
           </div>
         </article>
 
-        <article class="project-card" data-category="web">
+        <article class="project-card" data-category="web" data-detail="cloud" tabindex="0">
           <div class="card-thumb thumb-cyan">
             <svg viewBox="0 0 400 220" aria-hidden="true">
               <rect x="90" y="60" width="220" height="110" fill="#000"/>
@@ -131,7 +131,7 @@
           </div>
         </article>
 
-        <article class="project-card" data-category="oss">
+        <article class="project-card" data-category="oss" data-detail="reactor" tabindex="0">
           <div class="card-thumb thumb-yellow">
             <svg viewBox="0 0 400 220" aria-hidden="true">
               <line x1="125" y1="100" x2="275" y2="72" stroke="#000" stroke-width="8"/>
@@ -159,7 +159,7 @@
           </div>
         </article>
 
-        <article class="project-card" data-category="oss">
+        <article class="project-card" data-category="oss" data-detail="miniorm" tabindex="0">
           <div class="card-thumb thumb-pink">
             <svg viewBox="0 0 400 220" aria-hidden="true">
               <rect x="110" y="44" width="180" height="136" fill="#000"/>
@@ -376,6 +376,21 @@ $ echo $STATUS
       </div>
     </div>
   </footer>
+
+  <!-- ============ 项目详情弹窗 ============ -->
+  <div class="modal-overlay" id="modalOverlay">
+    <div class="modal" role="dialog" aria-modal="true" aria-labelledby="modalTitle">
+      <div class="modal-head">
+        <h3 id="modalTitle">项目标题</h3>
+        <button class="modal-close" id="modalClose" aria-label="关闭详情">✕</button>
+      </div>
+      <p class="modal-meta" id="modalMeta"></p>
+      <div class="modal-body" id="modalBody"></div>
+      <div class="modal-foot">
+        <a class="btn btn-black" id="modalRepo" href="#" target="_blank" rel="noopener">GitHub 源码 →</a>
+      </div>
+    </div>
+  </div>
 
   <script src="js/main.js"></script>
 </body>
