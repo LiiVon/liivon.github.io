@@ -335,11 +335,11 @@ $ echo $STATUS
         <h2 class="section-title">有想法？聊聊。</h2>
         <p class="section-desc">// 项目合作、技术交流或只是打个招呼都行</p>
       </div>
-      <div class="wechat-card">
+      <div class="wechat-card" id="wechatCard" role="button" tabindex="0" aria-label="点击放大微信二维码">
         <img class="wechat-qr" src="img/wechat.png" alt="微信二维码" />
         <div class="wechat-info">
           <h3 class="wechat-title">加微信，聊得更快</h3>
-          <p class="wechat-desc">// 扫码添加，备注来意（合作 / 内推 / 交流）</p>
+          <p class="wechat-desc">// 点击卡片放大二维码，扫码添加（备注来意）</p>
         </div>
       </div>
       <p class="form-hint">// 提交后会自动打开你的邮箱软件进行发送</p>
@@ -411,6 +411,14 @@ $ echo $STATUS
       <div class="modal-foot">
         <a class="btn btn-black" id="modalRepo" href="#" target="_blank" rel="noopener">GitHub 源码 →</a>
       </div>
+    </div>
+  </div>
+
+  <!-- ============ 微信二维码放大预览 ============ -->
+  <div class="qr-lightbox" id="qrLightbox" role="dialog" aria-modal="true" aria-label="微信二维码放大预览">
+    <div class="qr-lightbox-box">
+      <img src="img/wechat.png" alt="微信二维码（放大）" />
+      <p class="qr-lightbox-tip">// 扫码添加微信 · 点击任意处关闭</p>
     </div>
   </div>
 

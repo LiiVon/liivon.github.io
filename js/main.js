@@ -251,4 +251,36 @@
       if (e.key === "Escape") { closeDetail(); }
     });
   }
+
+  /* ---------- 微信二维码放大预览 ---------- */
+  var wechatCard = document.getElementById("wechatCard");
+  var qrLightbox = document.getElementById("qrLightbox");
+
+  function openQr() {
+    if (!qrLightbox) { return; }
+    qrLightbox.classList.add("is-open");
+    document.body.classList.add("modal-open");
+  }
+
+  function closeQr() {
+    if (!qrLightbox) { return; }
+    qrLightbox.classList.remove("is-open");
+    document.body.classList.remove("modal-open");
+  }
+
+  if (wechatCard && qrLightbox) {
+    wechatCard.addEventListener("click", openQr);
+    wechatCard.addEventListener("keydown", function (e) {
+      if (e.key === "Enter" || e.key === " ") {
+        e.preventDefault();
+        openQr();
+      }
+    });
+    qrLightbox.addEventListener("click", function (e) {
+      if (e.target === qrLightbox) { closeQr(); }
+    });
+    document.addEventListener("keydown", function (e) {
+      if (e.key === "Escape") { closeQr(); }
+    });
+  }
 })();
