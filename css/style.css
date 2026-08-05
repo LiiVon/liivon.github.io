@@ -870,6 +870,71 @@ a {
 }
 
 /* ============ 联系表单 ============ */
+.wechat-card {
+  display: inline-flex;
+  align-items: center;
+  gap: 18px;
+  background: var(--white);
+  border: 3px solid var(--black);
+  box-shadow: var(--shadow-s);
+  padding: 14px;
+  margin-bottom: 26px;
+  max-width: 100%;
+  transition: transform 0.15s ease-out, box-shadow 0.15s ease-out;
+}
+
+.wechat-card:hover {
+  box-shadow: 7px 7px 0 0 var(--black);
+  transform: translate(-3px, -3px);
+}
+
+@media (min-width: 768px) {
+  .wechat-card {
+    gap: 22px;
+    padding: 18px;
+  }
+
+  .wechat-card:hover {
+    box-shadow: 12px 12px 0 0 var(--black);
+    transform: translate(-4px, -4px);
+  }
+}
+
+.wechat-qr {
+  width: 96px;
+  height: 96px;
+  flex-shrink: 0;
+  border: 2px solid var(--black);
+  object-fit: contain;
+  background: var(--white);
+}
+
+@media (min-width: 768px) {
+  .wechat-qr {
+    width: 120px;
+    height: 120px;
+  }
+}
+
+.wechat-title {
+  font-size: 17px;
+  margin-bottom: 6px;
+}
+
+@media (min-width: 768px) {
+  .wechat-title { font-size: 20px; }
+}
+
+.wechat-desc {
+  font-size: 12px;
+  color: var(--gray-text);
+  font-weight: 700;
+}
+
+@media (min-width: 768px) {
+  .wechat-desc { font-size: 14px; }
+}
+
 .form-hint {
   color: var(--white);
   font-weight: 700;
