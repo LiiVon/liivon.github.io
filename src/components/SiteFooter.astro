@@ -1,0 +1,50 @@
+---
+import { site } from '../data/site'
+
+const year = new Date().getFullYear()
+---
+
+<footer class="site-footer">
+  <div class="wrap footer-inner">
+    <p class="tnum credit">© {year} {site.name}</p>
+    <ul class="links">
+      <li>
+        <a class="link-soft" href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+      </li>
+      <li>
+        <a class="link-soft" href={`mailto:${site.email}`}>Email</a>
+      </li>
+    </ul>
+  </div>
+</footer>
+
+<style>
+  .site-footer {
+    margin-top: var(--space-9);
+    border-top: 1px solid var(--c-border);
+  }
+
+  .footer-inner {
+    display: flex;
+    align-items: center;
+    justify-content: space-between;
+    gap: var(--space-4);
+    padding-block: var(--space-6);
+    font-size: var(--fs-meta);
+    color: var(--c-text-tertiary);
+  }
+
+  .links {
+    display: flex;
+    gap: var(--space-5);
+  }
+
+  .link-soft {
+    color: var(--c-text-tertiary);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .link-soft:hover {
+    color: var(--c-text);
+  }
+</style>

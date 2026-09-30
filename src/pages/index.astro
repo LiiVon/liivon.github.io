@@ -1,0 +1,118 @@
+---
+import BaseLayout from '../layouts/BaseLayout.astro'
+import SectionLabel from '../components/SectionLabel.astro'
+import ProjectRow from '../components/ProjectRow.astro'
+import WritingRow from '../components/WritingRow.astro'
+import { exploring, focus, site } from '../data/site'
+import { featuredProjects } from '../data/projects'
+import { latestWriting } from '../data/writing'
+
+const recentWriting = await latestWriting(3)
+---
+
+<BaseLayout title={site.title}>
+  <div class="wrap">
+    {/* ---------- Hero ---------- */}
+    <section class="home-col hero">
+      <h1 class="hero-name">{site.name}</h1>
+      <p class="hero-bio">{site.bio}</p>
+      <p class="hero-focus tnum">{focus.join(' · ')}</p>
+      <p class="hero-links">
+        <a class="link" href={`mailto:${site.email}`}>Email</a>
+        <a class="link" href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+      </p>
+    </section>
+
+    {/* ---------- Selected projects ---------- */}
+    <section class="section">
+      <SectionLabel label="Selected projects" />
+      <ul class="list">
+        {featuredProjects.map((project) => <ProjectRow project={project} />)}
+      </ul>
+    </section>
+
+    {/* ---------- Latest writing ---------- */}
+    <section class="section">
+      <SectionLabel label="Latest writing" />
+      <ul class="list">
+        {recentWriting.map((item) => <WritingRow item={item} />)}
+      </ul>
+    </section>
+
+    {/* ---------- Currently exploring ---------- */}
+    <section class="section">
+      <SectionLabel label="Currently exploring" />
+      <ul class="chips">
+        {exploring.map((topic) => <li class="chip">{topic}</li>)}
+      </ul>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .hero {
+    padding-top: clamp(40px, 7vw, 56px);
+  }
+
+  .hero-name {
+    font-size: var(--fs-display);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--ls-display);
+    line-height: var(--lh-tight);
+  }
+
+  .hero-bio {
+    margin-top: var(--space-4);
+    max-width: 480px;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-text-secondary);
+  }
+
+  .hero-focus {
+    margin-top: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--c-text-tertiary);
+  }
+
+  .hero-links {
+    display: flex;
+    gap: var(--space-5);
+    margin-top: var(--space-6);
+    font-size: var(--fs-small);
+  }
+
+  .section {
+    margin-top: var(--section-gap);
+  }
+
+  /* Section head (eyebrow) and its first hairline share the column width. */
+  .section :global(h2) {
+    margin-bottom: var(--space-4);
+  }
+
+  .list {
+    border-top: 1px solid var(--c-border);
+  }
+
+  .chips {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-2);
+  }
+
+  .chip {
+    padding: 4px 10px;
+    border: 1px solid var(--c-border);
+    border-radius: var(--radius-sm);
+    font-size: var(--fs-meta);
+    color: var(--c-text-secondary);
+  }
+
+  @media (max-width: 768px) {
+    .hero-links {
+      gap: var(--space-4);
+    }
+  }
+</style>

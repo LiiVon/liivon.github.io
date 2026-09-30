@@ -1,0 +1,157 @@
+---
+import { nav, site } from '../data/site'
+import ThemeToggle from './ThemeToggle.astro'
+
+const path = Astro.url.pathname
+
+/**
+ * `/` must only match itself; every other section also highlights its children
+ * (e.g. /projects/<slug>).
+ */
+const isActive = (href: string) =>
+  href === '/' ? path === '/' || path === '/index.html' : path === href || path.startsWith(`${href}/`)
+---
+
+<header class="site-header">
+  <div class="wrap header-inner">
+    <a class="brand" href="/">{site.name}</a>
+
+    <nav class="nav" aria-label="Primary">
+      <ul class="nav-list">
+        {
+          nav.map((item) => (
+            <li>
+              <a
+                href={item.href}
+                class:list={['nav-link', { 'is-active': isActive(item.href) }]}
+                aria-current={isActive(item.href) ? 'page' : undefined}
+              >
+                {item.label}
+              </a>
+            </li>
+          ))
+        }
+      </ul>
+    </nav>
+
+    <div class="actions">
+      <span class="divider" aria-hidden="true"></span>
+      <a class="ext" href={site.github} target="_blank" rel="noopener noreferrer">GitHub</a>
+      <ThemeToggle />
+    </div>
+  </div>
+</header>
+
+<style>
+  .site-header {
+    position: sticky;
+    top: 0;
+    z-index: 10;
+    background-color: var(--c-bg);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .header-inner {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+    height: 64px;
+  }
+
+  .brand {
+    font-size: var(--fs-small);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--ls-heading);
+    color: var(--c-text);
+  }
+
+  /* The brand leads, the nav sits right beside it, and only the trailing
+     actions (GitHub + theme) are pushed to the far edge. */
+  .actions {
+    margin-left: auto;
+  }
+
+  .actions {
+    display: flex;
+    align-items: center;
+    gap: var(--space-4);
+  }
+
+  .nav-list {
+    display: flex;
+    align-items: center;
+    gap: var(--space-5);
+  }
+
+  .nav-link,
+  .ext {
+    font-size: var(--fs-meta);
+    color: var(--c-text-secondary);
+    white-space: nowrap;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .nav-link:hover,
+  .ext:hover {
+    color: var(--c-text);
+  }
+
+  /* Active state uses gray steps + an underline. No accent color. */
+  .nav-link.is-active {
+    color: var(--c-text);
+    text-decoration: underline;
+    text-decoration-color: var(--c-text);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 6px;
+  }
+
+  .divider {
+    width: 1px;
+    height: 12px;
+    background-color: var(--c-border);
+  }
+
+  /* Reflow — not shrink: the nav becomes its own second row. */
+  @media (max-width: 768px) {
+    .header-inner {
+      display: grid;
+      grid-template-columns: 1fr auto;
+      align-items: center;
+      height: auto;
+      row-gap: 10px;
+      padding-top: 14px;
+      padding-bottom: 10px;
+    }
+
+    .brand {
+      grid-column: 1;
+      grid-row: 1;
+    }
+
+    .actions {
+      grid-column: 2;
+      grid-row: 1;
+      justify-self: end;
+    }
+
+    .nav {
+      grid-column: 1 / -1;
+      grid-row: 2;
+      overflow-x: auto;
+      scrollbar-width: none;
+    }
+
+    .nav::-webkit-scrollbar {
+      display: none;
+    }
+
+    .nav-list {
+      gap: var(--space-4);
+      padding-bottom: 2px;
+    }
+
+    .divider {
+      display: none;
+    }
+  }
+</style>

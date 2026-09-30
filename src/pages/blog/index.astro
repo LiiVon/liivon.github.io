@@ -1,0 +1,136 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import WritingRow from '../../components/WritingRow.astro'
+import BackLink from '../../components/BackLink.astro'
+import { groupBySeries } from '../../data/writing'
+
+/* One query feeds the whole page: series blocks (folder groups) plus a
+   standalone "Notes" block for posts that opt out of any series. */
+const { series, standalone } = await groupBySeries()
+const totalCount =
+  series.reduce((n, s) => n + s.posts.length, 0) + standalone.length
+---
+
+<BaseLayout
+  title="Blog"
+  description="Writing about C++, systems, robotics, AI and things I am learning."
+>
+  <div class="wrap">
+    <header class="page-head">
+      <BackLink href="/" label="LiiVon" />
+      <h1 class="page-title">Blog</h1>
+      <p class="page-lede">
+        Writing about C++, systems, robotics, AI and things I am learning.
+      </p>
+    </header>
+
+    {
+      series.map((s) => (
+        <section class="series-group">
+          <div class="group-head">
+            <div class="group-titles">
+              <a class="group-title link" href={`/blog/series/${s.slug}`}>
+                {s.title}
+              </a>
+              <p class="group-desc">{s.description}</p>
+            </div>
+            <a
+              class="group-count tnum link"
+              href={`/blog/series/${s.slug}`}
+            >
+              {s.posts.length} parts
+            </a>
+          </div>
+          <ol class="list">
+            {s.posts.map((post) => (
+              <WritingRow item={post} showDescription />
+            ))}
+          </ol>
+        </section>
+      ))
+    }
+
+    {
+      standalone.length > 0 && (
+        <section class="series-group">
+          <div class="group-head">
+            <div class="group-titles">
+              <h2 class="group-title">Notes</h2>
+              <p class="group-desc">
+                Standalone writing that is not part of a series.
+              </p>
+            </div>
+            <span class="group-count tnum">{standalone.length}</span>
+          </div>
+          <ol class="list">
+            {standalone.map((post) => (
+              <WritingRow item={post} showDescription />
+            ))}
+          </ol>
+        </section>
+      )
+    }
+
+    <p class="archive-eyebrow tnum">{totalCount} posts</p>
+  </div>
+</BaseLayout>
+
+<style>
+  /* Everything else comes from global.css page chrome. */
+  .series-group {
+    margin-top: var(--section-gap);
+  }
+
+  .group-head {
+    display: flex;
+    align-items: baseline;
+    justify-content: space-between;
+    gap: var(--space-5);
+    padding-bottom: var(--space-3);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .group-titles {
+    min-width: 0;
+  }
+
+  .group-title {
+    font-size: var(--fs-h3);
+    font-weight: 500;
+    color: var(--c-text);
+    letter-spacing: -0.01em;
+  }
+
+  .group-title.link:hover {
+    text-decoration: underline;
+    text-underline-offset: 4px;
+  }
+
+  .group-desc {
+    margin-top: 6px;
+    max-width: 60ch;
+    font-size: var(--fs-small);
+    line-height: var(--lh-body);
+    color: var(--c-text-secondary);
+  }
+
+  .group-count {
+    flex: none;
+    font-size: var(--fs-meta);
+    color: var(--c-text-tertiary);
+    white-space: nowrap;
+  }
+
+  .group-count.link:hover {
+    color: var(--c-text);
+  }
+
+  .list {
+    border-top: 1px solid var(--c-border);
+    margin-top: var(--space-2);
+  }
+
+  .archive-eyebrow {
+    margin-top: var(--section-gap);
+  }
+</style>

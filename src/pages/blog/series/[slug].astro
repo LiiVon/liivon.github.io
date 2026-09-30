@@ -1,0 +1,44 @@
+---
+import BaseLayout from '../../../layouts/BaseLayout.astro'
+import WritingRow from '../../../components/WritingRow.astro'
+import BackLink from '../../../components/BackLink.astro'
+import { seriesList, postsInSeries } from '../../../data/writing'
+
+export async function getStaticPaths() {
+  const series = await seriesList()
+  return series.map((s) => ({
+    params: { slug: s.slug },
+    props: { series: s },
+  }))
+}
+
+const { series } = Astro.props
+const posts = await postsInSeries(series.slug)
+---
+
+<BaseLayout title={series.title} description={series.description}>
+  <div class="wrap">
+    <header class="page-head">
+      <BackLink href="/blog" label="Blog" />
+      <p class="archive-eyebrow tnum">Series · {posts.length} parts</p>
+      <h1 class="page-title">{series.title}</h1>
+      <p class="page-lede">{series.description}</p>
+    </header>
+
+    <section class="archive-col">
+      <ol class="list">
+        {
+          posts.map((post, i) => (
+            <WritingRow item={post} showDescription index={String(i + 1).padStart(2, '0')} />
+          ))
+        }
+      </ol>
+    </section>
+  </div>
+</BaseLayout>
+
+<style>
+  .list {
+    border-top: 1px solid var(--c-border);
+  }
+</style>

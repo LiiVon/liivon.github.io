@@ -7,6 +7,9 @@ ai.md
 
 # 依赖与缓存
 node_modules/
+package-lock.json
 .cache/
+.astro/
+dist/
 .DS_Store
 *.local

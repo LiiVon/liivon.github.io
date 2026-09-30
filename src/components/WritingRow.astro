@@ -1,0 +1,105 @@
+---
+import type { Writing } from '../data/writing'
+
+interface Props {
+  item: Writing
+  /** Home leaves this off to stay as sparse as it is today. */
+  showDescription?: boolean
+  /** Optional part index (e.g. "01") shown in place of the date on series
+      landing pages. */
+  index?: string
+}
+
+const { item, showDescription = false, index } = Astro.props
+---
+
+<li class="row">
+  <time class="date tnum" datetime={item.date}>{index ?? item.date}</time>
+
+  {
+    item.href ? (
+      <a class="title link" href={item.href}>
+        {item.title}
+      </a>
+    ) : (
+      <span class="title">{item.title}</span>
+    )
+  }
+
+  {showDescription && <p class="desc">{item.description}</p>}
+
+  <span class="meta tnum">{item.category} · {item.readingTime}</span>
+</li>
+
+<style>
+  /* Explicit placement so the date can span every row of its entry without
+     disturbing the 76px column that keeps dates in a straight line. */
+  .row {
+    display: grid;
+    grid-template-columns: 76px minmax(0, 1fr) auto;
+    align-items: baseline;
+    column-gap: var(--space-5);
+    row-gap: var(--space-1);
+    padding-block: 11px;
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .date {
+    grid-column: 1;
+    grid-row: 1 / -1;
+  }
+
+  .title {
+    grid-column: 2;
+    grid-row: 1;
+  }
+
+  .desc {
+    grid-column: 2;
+    grid-row: 2;
+  }
+
+  .meta {
+    grid-column: 3;
+    grid-row: 1;
+  }
+
+  .date,
+  .meta {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--c-text-tertiary);
+  }
+
+  .title {
+    font-size: var(--fs-body);
+    color: var(--c-text);
+    min-width: 0;
+  }
+
+  .desc {
+    max-width: 62ch;
+    font-size: var(--fs-small);
+    line-height: var(--lh-body);
+    color: var(--c-text-secondary);
+  }
+
+  .meta {
+    white-space: nowrap;
+  }
+
+  /* Reflow: date and meta wrap around the title instead of sitting beside it. */
+  @media (max-width: 768px) {
+    .row {
+      display: flex;
+      flex-direction: column;
+      align-items: flex-start;
+      gap: 5px;
+      padding-block: var(--space-4);
+    }
+
+    .date {
+      order: -1;
+    }
+  }
+</style>

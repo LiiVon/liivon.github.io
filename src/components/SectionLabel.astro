@@ -1,0 +1,20 @@
+---
+interface Props {
+  label: string
+}
+
+const { label } = Astro.props
+---
+
+<h2 class="label">{label}</h2>
+
+<style>
+  .label {
+    font-family: var(--font-mono);
+    font-size: var(--fs-eyebrow);
+    font-weight: var(--fw-regular);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--c-text-tertiary);
+  }
+</style>

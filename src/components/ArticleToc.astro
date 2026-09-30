@@ -1,0 +1,101 @@
+---
+interface Heading {
+  depth: number
+  slug: string
+  text: string
+}
+
+interface Props {
+  headings: Heading[]
+}
+
+const { headings } = Astro.props
+
+/* Only the two meaningful levels make it into the Contents list — h1 is the
+   page title and never belongs in a table of contents. */
+const items = headings.filter((h) => h.depth === 2 || h.depth === 3)
+---
+
+{
+  items.length > 0 && (
+    <nav class="toc" aria-label="Table of contents">
+      <button class="toc-anchor" type="button" aria-expanded="false" aria-controls="toc-panel">
+        <svg class="toc-anchor-icon" width="14" height="14" viewBox="0 0 14 14" aria-hidden="true">
+          <path d="M1.5 3.5h11M1.5 7h11M1.5 10.5h11" stroke="currentColor" stroke-width="1.4" fill="none" stroke-linecap="round" />
+        </svg>
+        <span>目录</span>
+      </button>
+      <div class="toc-panel" id="toc-panel">
+        <p class="toc-label">Contents</p>
+        <ol class="toc-list">
+          {items.map((h, i) => (
+            <li class:list={['toc-item', { 'toc-sub': h.depth === 3 }]}>
+              <a class="toc-link" href={`#${h.slug}`}>
+                <span class="toc-num tnum">{String(i + 1).padStart(2, '0')}</span>
+                <span class="toc-text">{h.text}</span>
+              </a>
+            </li>
+          ))}
+        </ol>
+      </div>
+    </nav>
+  )
+}
+
+<style>
+  .toc {
+    font-size: var(--fs-small);
+  }
+
+  .toc-label {
+    margin-bottom: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--fs-eyebrow);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--c-text-tertiary);
+  }
+
+  .toc-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+  }
+
+  .toc-item {
+    line-height: var(--lh-snug);
+  }
+
+  .toc-sub {
+    padding-left: var(--space-4);
+  }
+
+  .toc-link {
+    display: flex;
+    gap: var(--space-3);
+    align-items: baseline;
+    color: var(--c-text-tertiary);
+    text-decoration: none;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .toc-link:hover {
+    color: var(--c-text);
+  }
+
+  /* Current section reads as the darkest gray; everything else steps back.
+     No accent color, no marker — only a value change. */
+  .toc-link[data-active] {
+    color: var(--c-text);
+  }
+
+  .toc-num {
+    font-family: var(--font-mono);
+    font-size: var(--fs-eyebrow);
+    color: var(--c-text-tertiary);
+  }
+
+  .toc-text {
+    min-width: 0;
+  }
+</style>

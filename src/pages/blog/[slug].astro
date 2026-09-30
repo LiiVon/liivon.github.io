@@ -1,0 +1,292 @@
+---
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import Prose from '../../components/Prose.astro'
+import ArticleToc from '../../components/ArticleToc.astro'
+import BackLink from '../../components/BackLink.astro'
+import { publishedPosts, formatDate, postsInSeries } from '../../data/writing'
+import { getEntry, render } from 'astro:content'
+import 'katex/dist/katex.min.css'
+
+export async function getStaticPaths() {
+  const posts = await publishedPosts()
+  return posts.map((post) => ({ params: { slug: post.slug } }))
+}
+
+const { slug } = Astro.params
+const entry = await getEntry('blog', slug!)
+
+if (!entry) {
+  return Astro.redirect('/404')
+}
+
+const { Content, headings } = await render(entry)
+const { title, description, date, category, readingTime } = entry.data
+
+/* Newest-first order drives the Previous / Next pair: "Previous" is the post
+   published just before this one, "Next" the one after. */
+const posts = await publishedPosts()
+const idx = posts.findIndex((p) => p.slug === slug)
+const prev = idx > 0 ? posts[idx - 1] : null
+const next = idx >= 0 && idx < posts.length - 1 ? posts[idx + 1] : null
+
+const meta = `${formatDate(date)} · ${category} · ${readingTime}`
+
+/* Series (project folder) this post belongs to, if any. Drives the
+   "Part N / M" breadcrumb and the same-series part list below. */
+const seriesSlug = entry.data.series
+let seriesTitle: string | undefined
+let seriesParts: Awaited<ReturnType<typeof postsInSeries>> = []
+let partIndex = -1
+if (seriesSlug) {
+  const se = await getEntry('series', seriesSlug)
+  seriesTitle = se?.data.title ?? seriesSlug
+  seriesParts = await postsInSeries(seriesSlug)
+  partIndex = seriesParts.findIndex((p) => p.slug === slug)
+}
+---
+
+<BaseLayout title={title} description={description}>
+  <article class="article">
+    <header class="article-head">
+      <BackLink href="/blog" label="Blog" />
+      {
+        seriesSlug && (
+          <a class="series-crumb link" href={`/blog/series/${seriesSlug}`}>
+            {seriesParts.length > 1
+              ? `Part ${partIndex + 1} / ${seriesParts.length} · ${seriesTitle}`
+              : `Series · ${seriesTitle}`}
+          </a>
+        )
+      }
+      <h1 class="article-title">{title}</h1>
+      {description && <p class="article-desc">{description}</p>}
+      <p class="article-meta tnum">{meta}</p>
+      <hr class="article-rule" />
+    </header>
+
+    <aside class="article-aside">
+      <ArticleToc headings={headings} />
+    </aside>
+
+    <div class="article-grid">
+      <div class="article-body">
+        <Prose>
+          <Content />
+        </Prose>
+      </div>
+    </div>
+
+    {
+      seriesSlug && seriesParts.length > 1 && (
+        <nav class="series-nav" aria-label="Parts in this series">
+          <p class="series-nav-label tnum">Series · {seriesTitle}</p>
+          <ol class="series-nav-list">
+            {seriesParts.map((p, i) => (
+              <li>
+                <a
+                  class:list={['series-nav-link', 'link', { 'is-current': p.slug === slug }]}
+                  href={`/blog/${p.slug}`}
+                >
+                  <span class="series-nav-no tnum">{String(i + 1).padStart(2, '0')}</span>
+                  <span class="series-nav-text">{p.title}</span>
+                </a>
+              </li>
+            ))}
+          </ol>
+        </nav>
+      )
+    }
+
+    <nav class="pager" aria-label="Post navigation">
+      <div class="pager-cell">
+        {
+          prev && (
+            <a class="pager-link" href={`/blog/${prev.slug}`}>
+              <span class="pager-dir">Previous</span>
+              <span class="pager-title">{prev.data.title}</span>
+            </a>
+          )
+        }
+      </div>
+      <div class="pager-cell pager-cell--end">
+        {
+          next && (
+            <a class="pager-link" href={`/blog/${next.slug}`}>
+              <span class="pager-dir">Next</span>
+              <span class="pager-title">{next.data.title}</span>
+            </a>
+          )
+        }
+      </div>
+    </nav>
+  </article>
+</BaseLayout>
+
+<script>
+  import '../../scripts/article'
+</script>
+
+<style>
+  .article {
+    max-width: 800px;
+    margin-inline: auto;
+    padding-inline: var(--gutter);
+    padding-bottom: var(--section-gap);
+  }
+
+  /* Header elements share the prose column's 720px left edge so the title,
+     meta and body all start from the same vertical line. */
+  .article-head {
+    max-width: 760px;
+    padding-top: clamp(40px, 7vw, 56px);
+  }
+
+  .article-title {
+    font-size: var(--fs-title);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--ls-title);
+    line-height: var(--lh-tight);
+  }
+
+  .article-desc {
+    margin-top: var(--space-4);
+    max-width: 60ch;
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-text-secondary);
+  }
+
+  .article-meta {
+    margin-top: var(--space-5);
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--c-text-tertiary);
+  }
+
+  .article-rule {
+    margin-top: var(--space-6);
+    border: 0;
+    border-top: 1px solid var(--c-border);
+  }
+
+  /* Single reading column, centered. The Contents list has been lifted out
+     into a fixed left rail (see prose.css), so the grid is now one column. */
+  .article-grid {
+    margin-top: var(--space-7);
+  }
+
+  .article-body {
+    min-width: 0;
+  }
+
+  .pager {
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    gap: var(--space-5);
+    max-width: 760px;
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--c-border);
+  }
+
+  .pager-cell--end {
+    text-align: right;
+  }
+
+  .pager-link {
+    display: inline-flex;
+    flex-direction: column;
+    gap: var(--space-2);
+    max-width: 100%;
+    color: var(--c-text);
+    text-decoration: none;
+  }
+
+  .pager-dir {
+    font-family: var(--font-mono);
+    font-size: var(--fs-eyebrow);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--c-text-tertiary);
+  }
+
+  .pager-title {
+    font-size: var(--fs-small);
+    color: var(--c-text);
+    text-decoration: underline;
+    text-decoration-color: var(--c-border);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 3px;
+    transition: text-decoration-color var(--dur) var(--ease);
+  }
+
+  .pager-link:hover .pager-title {
+    text-decoration-color: var(--c-text);
+  }
+
+  /* "Part N / M · Series" breadcrumb, sits between the Back link and title. */
+  .series-crumb {
+    display: inline-block;
+    margin-bottom: var(--space-4);
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--c-text-tertiary);
+    transition: color var(--dur) var(--ease);
+  }
+
+  .series-crumb:hover {
+    color: var(--c-text);
+  }
+
+  /* Compact list of every part in the series, above the prev/next pager. */
+  .series-nav {
+    max-width: 760px;
+    margin-top: var(--space-8);
+    padding-top: var(--space-6);
+    border-top: 1px solid var(--c-border);
+  }
+
+  .series-nav-label {
+    font-size: var(--fs-eyebrow);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--c-text-tertiary);
+    margin-bottom: var(--space-4);
+  }
+
+  .series-nav-list {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-1);
+  }
+
+  .series-nav-link {
+    display: flex;
+    align-items: baseline;
+    gap: var(--space-3);
+    padding-block: 4px;
+    color: var(--c-text-secondary);
+    text-decoration: none;
+    transition: color var(--dur) var(--ease);
+  }
+
+  .series-nav-link:hover {
+    color: var(--c-text);
+  }
+
+  .series-nav-no {
+    flex: none;
+    font-size: var(--fs-meta);
+    color: var(--c-text-tertiary);
+  }
+
+  .series-nav-link.is-current {
+    color: var(--c-text);
+  }
+
+  .series-nav-link.is-current .series-nav-no {
+    color: var(--c-text);
+  }
+</style>

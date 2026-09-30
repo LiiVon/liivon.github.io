@@ -1,0 +1,25 @@
+<svg xmlns="http://www.w3.org/2000/svg" width="720" height="220" viewBox="0 0 720 220" fill="none" role="img" aria-label="CMake configure-build-install flow">
+  <rect width="720" height="220" fill="#ffffff"/>
+  <g stroke="#171717" stroke-width="1.4" fill="#fafafa">
+    <rect x="24" y="84" width="150" height="52" rx="4"/>
+    <rect x="285" y="84" width="150" height="52" rx="4"/>
+    <rect x="546" y="84" width="150" height="52" rx="4"/>
+  </g>
+  <g fill="#171717" font-family="'Inter','PingFang SC',sans-serif" font-size="15">
+    <text x="99" y="114" text-anchor="middle">CMakeLists.txt</text>
+    <text x="360" y="114" text-anchor="middle">configure</text>
+    <text x="621" y="114" text-anchor="middle">build</text>
+  </g>
+  <g stroke="#5c5c5c" stroke-width="1.4" fill="none" stroke-dasharray="4 4">
+    <path d="M174 110 H285"/>
+    <path d="M435 110 H546"/>
+  </g>
+  <g fill="#5c5c5c" font-family="'Inter',sans-serif" font-size="12">
+    <text x="229" y="102" text-anchor="middle">generate</text>
+    <text x="490" y="102" text-anchor="middle">compile</text>
+  </g>
+  <g fill="#a3a3a3" font-family="'Inter',sans-serif" font-size="12">
+    <text x="24" y="44" font-weight="500" letter-spacing="1.5">DEMO DIAGRAM</text>
+    <text x="24" y="170" fill="#5c5c5c">A grayscale placeholder — not a real build graph.</text>
+  </g>
+</svg>

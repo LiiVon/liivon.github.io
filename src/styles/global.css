@@ -1,0 +1,209 @@
+/* ==========================================================================
+   Global base — reset, element defaults, and the small set of utilities
+   the whole site shares. Everything else lives scoped inside components.
+   ========================================================================== */
+
+*,
+*::before,
+*::after {
+  box-sizing: border-box;
+}
+
+* {
+  margin: 0;
+  padding: 0;
+}
+
+html {
+  -webkit-text-size-adjust: 100%;
+  background-color: var(--c-bg);
+}
+
+body {
+  background-color: transparent;
+  color: var(--c-text);
+  font-family: var(--font-sans);
+  font-size: var(--fs-body);
+  font-weight: var(--fw-regular);
+  line-height: var(--lh-body);
+  font-feature-settings: 'cv11', 'ss01';
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+  min-height: 100vh;
+}
+
+/* Reactive dot grid: a single canvas paints the dots and the soft halo
+   that follows the pointer. Sits above the html background, below content.
+   Drawn by src/scripts/dotgrid.ts — no gradient, no shadow. */
+.bg-dots {
+  position: fixed;
+  inset: 0;
+  z-index: -1;
+  pointer-events: none;
+}
+
+h1,
+h2,
+h3,
+h4 {
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-snug);
+}
+
+img,
+svg,
+video {
+  display: block;
+  max-width: 100%;
+}
+
+a {
+  color: inherit;
+  text-decoration: none;
+}
+
+button {
+  font: inherit;
+  color: inherit;
+  background: none;
+  border: none;
+  cursor: pointer;
+}
+
+ul,
+ol {
+  list-style: none;
+}
+
+/* Numbers, dates and timings line up vertically in lists. */
+.tnum {
+  font-variant-numeric: tabular-nums;
+}
+
+/* Selection stays inside black / white / gray. */
+::selection {
+  background-color: var(--c-text);
+  color: var(--c-bg);
+}
+
+:focus-visible {
+  outline: 1px solid var(--c-text);
+  outline-offset: 3px;
+  border-radius: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+  *,
+  *::before,
+  *::after {
+    animation-duration: 0.01ms !important;
+    animation-iteration-count: 1 !important;
+    transition-duration: 0.01ms !important;
+    scroll-behavior: auto !important;
+  }
+}
+
+/* ---------- Layout utilities ---------- */
+
+.wrap {
+  width: 100%;
+  max-width: var(--measure-page);
+  margin-inline: auto;
+  padding-inline: var(--gutter);
+}
+
+.home-col {
+  max-width: var(--measure-home);
+}
+
+.sr-only {
+  position: absolute;
+  width: 1px;
+  height: 1px;
+  padding: 0;
+  margin: -1px;
+  overflow: hidden;
+  clip-path: inset(50%);
+  white-space: nowrap;
+  border: 0;
+}
+
+/* ---------- Page chrome ----------
+   Shared by every inner page (Projects, Blog, later Notes/About) so the
+   rhythm above a list is defined once instead of drifting page by page. */
+
+.page-head {
+  max-width: var(--measure-home);
+  padding-top: clamp(40px, 7vw, 56px);
+}
+
+.page-title {
+  font-size: var(--fs-title);
+  font-weight: var(--fw-medium);
+  letter-spacing: var(--ls-title);
+  line-height: var(--lh-tight);
+}
+
+.page-lede {
+  margin-top: var(--space-3);
+  max-width: 480px;
+  font-size: var(--fs-body);
+  line-height: var(--lh-body);
+  color: var(--c-text-secondary);
+}
+
+/* Wider than Home's column: an archive is meant to be scanned. */
+.archive-col {
+  max-width: var(--measure-wide);
+  margin-top: clamp(40px, 6vw, 56px);
+}
+
+.archive-eyebrow {
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-text-tertiary);
+  margin-bottom: var(--space-4);
+}
+
+/* ---------- Links ----------
+   No accent color: state changes are expressed by underline contrast. */
+
+.link {
+  color: var(--c-text);
+  text-decoration: underline;
+  text-decoration-color: var(--c-border);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur) var(--ease);
+}
+
+.link:hover {
+  text-decoration-color: var(--c-text);
+}
+
+.link--soft {
+  color: var(--c-text-secondary);
+  text-decoration-color: transparent;
+}
+
+.link--soft:hover {
+  color: var(--c-text);
+  text-decoration-color: var(--c-border);
+}
+
+/* ---------- Theme switch transition ----------
+   Added by ThemeToggle for ~200ms so the whole page cross-fades,
+   then removed so hover states elsewhere stay instant. */
+
+html.theme-anim,
+html.theme-anim *,
+html.theme-anim *::before,
+html.theme-anim *::after {
+  transition:
+    background-color 200ms var(--ease),
+    border-color 200ms var(--ease),
+    color 200ms var(--ease),
+    text-decoration-color 200ms var(--ease) !important;
+}

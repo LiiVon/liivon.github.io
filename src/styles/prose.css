@@ -1,0 +1,390 @@
+/* ==========================================================================
+   Prose — typography for rendered Markdown.
+
+   Global (not component-scoped) because Markdown children are injected at
+   render time and component scoping would not reach them.
+
+   Hierarchy comes from size, line-height, margin and gray value alone.
+   No bold above 500, no color, no boxes.
+   ========================================================================== */
+
+.prose {
+  font-size: var(--fs-prose);
+  line-height: var(--lh-prose);
+  overflow-wrap: break-word;
+}
+
+.prose > :first-child {
+  margin-top: 0;
+}
+
+.prose > * + * {
+  margin-top: var(--space-5);
+}
+
+/* ---------- Headings ---------- */
+
+.prose h1,
+.prose h2,
+.prose h3,
+.prose h4 {
+  font-weight: var(--fw-medium);
+  line-height: var(--lh-snug);
+  scroll-margin-top: var(--space-6);
+}
+
+.prose h1 {
+  margin-top: var(--space-8);
+  font-size: var(--fs-title);
+  letter-spacing: var(--ls-title);
+}
+
+.prose h2 {
+  margin-top: var(--space-7);
+  font-size: var(--fs-heading);
+  letter-spacing: var(--ls-heading);
+}
+
+.prose h3 {
+  margin-top: var(--space-6);
+  font-size: var(--fs-subheading);
+  letter-spacing: var(--ls-heading);
+}
+
+.prose h4 {
+  margin-top: var(--space-6);
+  font-size: var(--fs-prose);
+  color: var(--c-text-secondary);
+}
+
+/* A heading followed by a list or table needs less air than usual. */
+.prose h1 + *,
+.prose h2 + *,
+.prose h3 + *,
+.prose h4 + * {
+  margin-top: var(--space-4);
+}
+
+/* ---------- Inline elements ---------- */
+
+.prose strong {
+  font-weight: var(--fw-medium);
+  color: var(--c-text);
+}
+
+.prose em {
+  font-style: italic;
+}
+
+.prose a {
+  color: var(--c-text);
+  text-decoration: underline;
+  text-decoration-color: var(--c-border);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 3px;
+  transition: text-decoration-color var(--dur) var(--ease);
+}
+
+.prose a:hover {
+  text-decoration-color: var(--c-text);
+}
+
+/* Light by default — a gray hairline and the surface tone, not a badge. */
+.prose :not(pre) > code {
+  padding: 1px 5px;
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--radius-sm);
+  background-color: var(--c-surface);
+  font-family: var(--font-mono);
+  font-size: 0.88em;
+  white-space: break-spaces;
+}
+
+/* ---------- Lists ---------- */
+
+.prose ul,
+.prose ol {
+  padding-left: 1.4em;
+}
+
+.prose ul {
+  list-style: disc;
+}
+
+.prose ol {
+  list-style: decimal;
+}
+
+.prose ol ol {
+  list-style: lower-alpha;
+}
+
+.prose li + li {
+  margin-top: var(--space-1);
+}
+
+.prose li > ul,
+.prose li > ol {
+  margin-top: var(--space-1);
+}
+
+/* ---------- Quotation ----------
+   A single gray rule and an indent. No tinted background, no wide border. */
+
+.prose blockquote {
+  margin-top: var(--space-6);
+  padding-left: var(--space-5);
+  border-left: 1px solid var(--c-border);
+  color: var(--c-text-secondary);
+}
+
+.prose blockquote > * + * {
+  margin-top: var(--space-4);
+}
+
+.prose hr {
+  margin-top: var(--space-7);
+  border: 0;
+  border-top: 1px solid var(--c-border);
+}
+
+/* ---------- Code blocks ----------
+   Shiki emits the LIGHT theme as inline color/background on the <pre>, plus
+   --shiki-dark / --shiki-dark-bg variables for the dark theme. Inline (light)
+   values beat normal stylesheet rules, so the dark overrides MUST use
+   !important to win — otherwise the text stays light-on-dark and vanishes.
+   The light-theme inline defaults are left untouched; we only flip dark. */
+
+[data-theme='dark'] .astro-code,
+[data-theme='dark'] .astro-code span {
+  color: var(--shiki-dark) !important;
+}
+
+[data-theme='dark'] .astro-code {
+  background-color: var(--shiki-dark-bg) !important;
+}
+
+@media (prefers-color-scheme: dark) {
+  [data-theme='system'] .astro-code,
+  [data-theme='system'] .astro-code span {
+    color: var(--shiki-dark) !important;
+  }
+
+  [data-theme='system'] .astro-code {
+    background-color: var(--shiki-dark-bg) !important;
+  }
+}
+
+.prose .code-block {
+  position: relative;
+  margin-top: var(--space-6);
+}
+
+.prose .code-block pre {
+  margin-top: 0;
+  padding: var(--space-4) var(--space-5);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--radius-sm);
+  font-family: var(--font-mono);
+  font-size: 14px;
+  line-height: 1.7;
+  overflow-x: auto;
+}
+
+.prose pre > code {
+  padding: 0;
+  border: 0;
+  border-radius: 0;
+  background: none;
+  font-size: inherit;
+  white-space: pre;
+}
+
+/* Copy button — text only, one step quieter until hovered. */
+.copy-btn {
+  position: absolute;
+  top: 10px;
+  right: 12px;
+  padding: 2px 6px;
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  color: var(--c-text-tertiary);
+  background-color: var(--c-bg);
+  border: 1px solid var(--c-border-subtle);
+  border-radius: var(--radius-sm);
+  transition:
+    color var(--dur) var(--ease),
+    border-color var(--dur) var(--ease);
+}
+
+.copy-btn:hover {
+  color: var(--c-text);
+  border-color: var(--c-border);
+}
+
+/* ---------- Tables ----------
+   Hairlines only: no header fill, no zebra stripes, no wrapper card. */
+
+.prose table {
+  width: 100%;
+  margin-top: var(--space-6);
+  border-collapse: collapse;
+  font-size: var(--fs-small);
+  line-height: var(--lh-body);
+}
+
+.prose th,
+.prose td {
+  padding: 10px 14px;
+  text-align: left;
+  vertical-align: top;
+  border-bottom: 1px solid var(--c-border-subtle);
+}
+
+.prose th {
+  font-weight: var(--fw-medium);
+  color: var(--c-text);
+  border-bottom-color: var(--c-border);
+}
+
+.prose td {
+  color: var(--c-text-secondary);
+}
+
+.prose th:first-child,
+.prose td:first-child {
+  padding-left: 0;
+}
+
+.prose th:last-child,
+.prose td:last-child {
+  padding-right: 0;
+}
+
+/* Wide tables scroll instead of breaking the reading column. */
+@media (max-width: 640px) {
+  .prose table {
+    display: block;
+    overflow-x: auto;
+  }
+}
+
+/* ---------- Images ----------
+   Four pixels of radius is the whole decoration budget. */
+
+.prose img {
+  border: 1px solid var(--c-border-subtle);
+  border-radius: 4px;
+}
+
+.prose figure {
+  margin-top: var(--space-6);
+}
+
+.prose figcaption {
+  margin-top: var(--space-3);
+  font-size: var(--fs-meta);
+  line-height: var(--lh-body);
+  color: var(--c-text-tertiary);
+}
+
+/* ---------- Math ----------
+   KaTeX ships with its own CSS; only the sizing has to follow the column. */
+
+.prose .katex {
+  font-size: 1.02em;
+}
+
+.prose .katex-display {
+  margin-top: var(--space-5);
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding-block: var(--space-1);
+}
+
+/* ---------- Mermaid ----------
+   The generated SVG is themed through variables at render time; these rules
+   only place it and keep it from overflowing the reading column. */
+
+.prose .mermaid-container {
+  margin-top: var(--space-6);
+  overflow-x: auto;
+}
+
+.prose .mermaid-container svg {
+  max-width: 100%;
+  height: auto;
+}
+
+/* ---------- Floating Contents (antfu-style) ----------
+   Lifted out of the reading column and pinned to the left margin. Collapsed
+   by default; the always-visible anchor reveals the list on hover, and it
+   fades out a few seconds after the pointer leaves. Monochrome throughout.
+   Only shown when the viewport leaves room beside the centered column. */
+
+.article-aside {
+  display: none;
+  position: fixed;
+  left: 16px;
+  top: 120px;
+  width: 200px;
+  z-index: 30;
+}
+
+@media (min-width: 1280px) {
+  .article-aside {
+    display: block;
+  }
+}
+
+/* Quiet gray trigger — a hairline-free button, no badge. */
+.toc-anchor {
+  display: inline-flex;
+  align-items: center;
+  gap: 8px;
+  padding: 4px 0;
+  font-family: var(--font-mono);
+  font-size: var(--fs-eyebrow);
+  letter-spacing: var(--ls-wide);
+  text-transform: uppercase;
+  color: var(--c-text-tertiary);
+  background: none;
+  border: 0;
+  cursor: pointer;
+  transition: color var(--dur) var(--ease);
+}
+
+.toc-anchor:hover,
+.toc-anchor[aria-expanded='true'] {
+  color: var(--c-text);
+}
+
+.toc-anchor-icon {
+  display: block;
+  color: currentColor;
+}
+
+/* Collapsed by default; [data-open] / [data-pinned] on the aside expand it.
+   Transition (not display) so it eases in rather than popping. */
+.article-aside .toc-panel {
+  max-height: 0;
+  margin-top: 0;
+  overflow: hidden;
+  opacity: 0;
+  transform: translateX(-6px);
+  pointer-events: none;
+  transition:
+    max-height 0.3s var(--ease),
+    opacity 0.25s var(--ease),
+    transform 0.25s var(--ease),
+    margin-top 0.3s var(--ease);
+}
+
+.article-aside[data-open] .toc-panel,
+.article-aside[data-pinned] .toc-panel {
+  max-height: 70vh;
+  margin-top: var(--space-3);
+  opacity: 1;
+  transform: none;
+  pointer-events: auto;
+}

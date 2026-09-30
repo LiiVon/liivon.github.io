@@ -1,0 +1,190 @@
+---
+import type { GetStaticPaths } from 'astro'
+import BaseLayout from '../../layouts/BaseLayout.astro'
+import BackLink from '../../components/BackLink.astro'
+import SectionLabel from '../../components/SectionLabel.astro'
+import { projects, type Project } from '../../data/projects'
+
+export const getStaticPaths = (() =>
+  projects.map((project) => ({
+    params: { slug: project.slug },
+    props: { project },
+  }))) satisfies GetStaticPaths
+
+interface Props {
+  project: Project
+}
+
+const { project } = Astro.props
+const d = project.detail
+
+/** Ordered so the page always reads the same way, whatever the data holds. */
+const sections = [
+  { key: 'overview', label: 'Overview', body: d?.overview },
+  { key: 'architecture', label: 'Architecture', body: d?.architecture },
+  { key: 'technical', label: 'Technical Details', body: d?.technical },
+  { key: 'challenges', label: 'Challenges', body: d?.challenges },
+  { key: 'learned', label: 'What I Learned', body: d?.learned },
+] as const
+
+const hasLinks = Boolean(project.github || project.demo)
+---
+
+<BaseLayout title={project.name} description={project.description}>
+  <article class="wrap">
+    <header class="head">
+      <BackLink href="/projects" label="Projects" />
+
+      <h1 class="title">{project.name}</h1>
+      <p class="summary">{project.description}</p>
+
+      <dl class="facts">
+        <div class="fact">
+          <dt>Year</dt>
+          <dd class="tnum">{project.year}</dd>
+        </div>
+        <div class="fact">
+          <dt>Status</dt>
+          <dd>{project.status}</dd>
+        </div>
+        <div class="fact fact--wide">
+          <dt>Tech</dt>
+          <dd>{project.tech.join(' · ')}</dd>
+        </div>
+      </dl>
+    </header>
+
+    {
+      sections.map((section) =>
+        section.body?.length ? (
+          <section class="block">
+            <SectionLabel label={section.label} />
+            <div class="body">
+              {section.body.map((paragraph) => (
+                <p>{paragraph}</p>
+              ))}
+            </div>
+          </section>
+        ) : null,
+      )
+    }
+
+    {
+      hasLinks && (
+        <section class="block">
+          <SectionLabel label="Source Code" />
+          <ul class="sources">
+            {project.github && (
+              <li>
+                <a class="link" href={project.github} target="_blank" rel="noopener noreferrer">
+                  GitHub
+                </a>
+                <span class="hint">{project.github.replace('https://', '')}</span>
+              </li>
+            )}
+            {project.demo && (
+              <li>
+                <a class="link" href={project.demo} target="_blank" rel="noopener noreferrer">
+                  Demo
+                </a>
+                <span class="hint">{project.demo.replace('https://', '')}</span>
+              </li>
+            )}
+          </ul>
+        </section>
+      )
+    }
+  </article>
+</BaseLayout>
+
+<style>
+  .head {
+    max-width: var(--measure-prose);
+    padding-top: clamp(40px, 7vw, 56px);
+  }
+
+  .title {
+    font-size: var(--fs-title);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--ls-title);
+    line-height: var(--lh-tight);
+  }
+
+  .summary {
+    margin-top: var(--space-3);
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-text-secondary);
+  }
+
+  /* Meta as a definition list: the label column carries the hierarchy,
+     so no boxes, borders or badges are needed. */
+  .facts {
+    display: flex;
+    flex-wrap: wrap;
+    gap: var(--space-3) var(--space-7);
+    margin-top: var(--space-6);
+    padding-top: var(--space-4);
+    border-top: 1px solid var(--c-border);
+  }
+
+  .fact dt {
+    font-family: var(--font-mono);
+    font-size: var(--fs-eyebrow);
+    letter-spacing: var(--ls-wide);
+    text-transform: uppercase;
+    color: var(--c-text-tertiary);
+  }
+
+  .fact dd {
+    margin-top: 3px;
+    font-size: var(--fs-small);
+    color: var(--c-text);
+  }
+
+  .block {
+    max-width: var(--measure-prose);
+    margin-top: var(--section-gap);
+  }
+
+  /* Reuses SectionLabel, which already carries the eyebrow style. */
+  .block :global(h2) {
+    margin-bottom: var(--space-4);
+  }
+
+  .body p {
+    font-size: var(--fs-body);
+    line-height: var(--lh-body);
+    color: var(--c-text-secondary);
+  }
+
+  .body p + p {
+    margin-top: var(--space-4);
+  }
+
+  .sources {
+    display: flex;
+    flex-direction: column;
+    gap: var(--space-3);
+    font-size: var(--fs-small);
+  }
+
+  .hint {
+    margin-left: var(--space-3);
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--c-text-tertiary);
+  }
+
+  @media (max-width: 768px) {
+    .facts {
+      gap: var(--space-4) var(--space-6);
+    }
+
+    .hint {
+      display: block;
+      margin-left: 0;
+      margin-top: 2px;
+    }
+  }
+</style>

@@ -1,0 +1,181 @@
+---
+import type { Project } from '../data/projects'
+
+interface Props {
+  project: Project
+  /** Rendered as 01, 02 … Used only on /projects. */
+  index?: number
+  /** Where the name points. Defaults to the project's own page. */
+  href?: string
+  /**
+   * `meta`    — tech sits beside the year on the right (Home look).
+   * `stacked` — tech sits under the description, year and status on the right.
+   */
+  variant?: 'meta' | 'stacked'
+}
+
+const {
+  project,
+  index,
+  href,
+  variant = 'meta',
+} = Astro.props
+
+const target = href ?? `/projects/${project.slug}`
+const external = /^https?:\/\//i.test(target)
+const externalAttrs = external ? { target: '_blank', rel: 'noopener noreferrer' } : {}
+---
+
+<li class:list={['row', `row--${variant}`, { 'row--indexed': index !== undefined }]}>
+  {
+    index !== undefined && (
+      <span class="idx tnum" aria-hidden="true">
+        {String(index).padStart(2, '0')}
+      </span>
+    )
+  }
+
+  <a class="row-main" href={target} {...externalAttrs}>
+    <h3 class="row-title">{project.name}</h3>
+    <p class="row-summary">{project.description}</p>
+    {variant === 'stacked' && <p class="row-tech tnum">{project.tech.join(' · ')}</p>}
+  </a>
+
+  <p class="row-meta tnum">
+    {
+      variant === 'meta' ? (
+        <>
+          <span>{project.year}</span>
+          <span class="sep">·</span>
+          <span>{project.tech.join(' · ')}</span>
+        </>
+      ) : (
+        <>
+          <span class="year">{project.year}</span>
+          <span class="status">{project.status}</span>
+        </>
+      )
+    }
+  </p>
+</li>
+
+<style>
+  .row {
+    display: grid;
+    grid-template-columns: 1fr auto;
+    align-items: baseline;
+    gap: var(--space-6);
+    padding-block: var(--space-4);
+    border-bottom: 1px solid var(--c-border);
+  }
+
+  .row--indexed {
+    grid-template-columns: 44px 1fr auto;
+    gap: var(--space-4) var(--space-5);
+  }
+
+  /* The number column is decoration-free typography: it indexes, nothing else. */
+  .idx {
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--c-text-tertiary);
+    font-variant-numeric: tabular-nums;
+  }
+
+  .row-main {
+    display: block;
+    min-width: 0;
+  }
+
+  .row-title {
+    font-size: var(--fs-body);
+    font-weight: var(--fw-medium);
+    letter-spacing: var(--ls-heading);
+    color: var(--c-text);
+  }
+
+  .row-summary {
+    margin-top: 5px;
+    font-size: var(--fs-small);
+    line-height: 1.6;
+    color: var(--c-text-secondary);
+  }
+
+  .row-tech {
+    margin-top: var(--space-2);
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--c-text-tertiary);
+  }
+
+  /* Values, not labels — so it steps up from the eyebrow reserved for section labels. */
+  .row-meta {
+    flex: none;
+    font-family: var(--font-mono);
+    font-size: var(--fs-meta);
+    color: var(--c-text-tertiary);
+    white-space: nowrap;
+    transition: color var(--dur) var(--ease);
+  }
+
+  /* Year and status share one gray — the vertical position already separates
+     them, so there is no reason to push the contrast lower. */
+  .row--stacked .row-meta {
+    display: flex;
+    flex-direction: column;
+    align-items: flex-end;
+    gap: 3px;
+    text-align: right;
+  }
+
+  .row--stacked .status {
+    text-transform: lowercase;
+  }
+
+  .sep {
+    padding-inline: 5px;
+  }
+
+  /* Hover: underline appears, meta text steps one gray darker. No color. */
+  .row:hover .row-title {
+    text-decoration: underline;
+    text-decoration-color: var(--c-border);
+    text-decoration-thickness: 1px;
+    text-underline-offset: 4px;
+  }
+
+  .row:hover .row-meta {
+    color: var(--c-text-secondary);
+  }
+
+  /* Reflow, not shrink: the meta column drops beneath the description. */
+  @media (max-width: 768px) {
+    .row,
+    .row--indexed {
+      display: flex;
+      flex-direction: column;
+      align-items: stretch;
+      gap: var(--space-2);
+      padding-block: var(--space-4);
+    }
+
+    .idx {
+      margin-bottom: calc(var(--space-2) * -1);
+    }
+
+    .row-meta,
+    .row--stacked .row-meta {
+      flex-direction: row;
+      align-items: baseline;
+      gap: 5px;
+      text-align: left;
+      white-space: normal;
+    }
+
+    .row--stacked .status::before {
+      content: '·';
+      padding-inline: 5px;
+      color: var(--c-text-tertiary);
+    }
+  }
+</style>
