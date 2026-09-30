@@ -1,3 +1,12 @@
 ai.md
 .vercel-tmp
 .vercel
+
+# 会话与工具数据
+.workbuddy/
+
+# 依赖与缓存
+node_modules/
+.cache/
+.DS_Store
+*.local
