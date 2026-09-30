@@ -5,8 +5,10 @@
 name: Deploy to GitHub Pages
 
 on:
+  # `main` is the default branch and `rebuild` was where this rewrite landed.
+  # Either one may be pushed day to day, so deploy from both.
   push:
-    branches: [rebuild]
+    branches: [main, rebuild]
   workflow_dispatch:
 
 permissions:
