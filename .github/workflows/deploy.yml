@@ -1,0 +1,55 @@
+# Build the Astro site and publish it to GitHub Pages.
+#
+# Requires once: Settings -> Pages -> Source = "GitHub Actions".
+# Until that switch is made, this workflow runs but does not serve anything.
+name: Deploy to GitHub Pages
+
+on:
+  push:
+    branches: [rebuild]
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  pages: write
+  id-token: write
+
+concurrency:
+  group: pages
+  cancel-in-progress: false
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v4
+
+      - name: Setup Node
+        uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+          # No `cache: npm` here on purpose: package-lock.json is gitignored in
+          # this repo, and setup-node's npm cache fails without a lockfile.
+
+      - name: Install dependencies
+        run: npm install
+
+      - name: Build
+        run: npm run build
+
+      - name: Upload Pages artifact
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: dist
+
+  deploy:
+    needs: build
+    runs-on: ubuntu-latest
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    steps:
+      - name: Deploy to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4
